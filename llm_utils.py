@@ -6,6 +6,7 @@ MINI_MODEL = 'gpt-4o-mini'
 EMBEDDING_MODEL_LARGE = "text-embedding-3-large"
 EMBEDDING_MODEL_SMALL = "text-embedding-3-small"
 OPENAI_KEY = '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'
+# OPENAI_KEY = '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'
 
 # Initialize OpenAI client
 openai_client = OpenAI(api_key=OPENAI_KEY)
@@ -25,6 +26,7 @@ def get_embedding(texts, size=EMBEDDING_MODEL_SMALL):
     cleaned_texts = [text.replace('\n', ' ').replace('\t', ' ').strip() for text in texts if text]
     response = openai_client.embeddings.create(input=cleaned_texts, model=size)
     return [item.embedding for item in response.data]
+
 
 def llm(model=MINI_MODEL, system_prompt=None, user_prompt=None, assistant_prompt=None, params=None):
     """
