@@ -1,5 +1,9 @@
 # Davis Polk Lawyer Query Challenge
 
+## Comments
+
+This is my attempt at this challenge. The OpenAI key provided didn't work so I switched to using Groq. Groq is great because you are able to use their API for free. But, since Groq isn't a GPT model it doesn't support embeddings. The Groq models (like llama3-8b-8192) are designed for general-purpose language tasks (such as text generation) rather than specialized tasks like embeddings. Groq was extremely useful for verifying the correctness of Level 1 and 2 but struggled at Level 3.
+
 ## Introduction
 
 Davis Polk is a big law firm with ~1000 lawyers. Here is their website: https://www.davispolk.com/
