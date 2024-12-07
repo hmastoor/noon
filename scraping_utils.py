@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-import csv
+from llm_utils_groq import get_embedding  # Your existing embedding function
+
 
 def parse_page(url: str) -> str:
     """
@@ -43,6 +44,7 @@ def parse_page(url: str) -> str:
     except requests.RequestException as e:
         raise requests.RequestException(f"Error fetching the page {url}: {e}")
 
+
 def process_lawyer_profiles(csv_file: str, output_file: str = 'lawyer_profiles.json'):
     """
     Process a list of lawyer URLs from a CSV file, parse their profiles, clean the text, and store the results in a JSON file.
@@ -71,5 +73,51 @@ def process_lawyer_profiles(csv_file: str, output_file: str = 'lawyer_profiles.j
     print(f"Profiles have been saved to {output_file}")
 
 
-if __name__ == '__main__':
-    process_lawyer_profiles('lawyers.csv')
+process_lawyer_profiles('lawyers.csv')
+
+
+def process_lawyer_profiles_with_embeddings(csv_file='lawyers.csv'):
+    """
+    Pre-process lawyer profiles, generate embeddings, and store them in a JSON file.
+
+    Args:
+        csv_file (str): Path to the CSV file containing lawyer profile URLs.
+
+    Returns:
+        None
+    """
+    lawyer_profiles = []
+    
+    # Read the CSV file with lawyer URLs
+    with open(csv_file, 'r') as f:
+        lawyer_urls = [line.strip() for line in f.readlines()]
+    
+    for url in lawyer_urls:
+        try:
+            # Fetch the profile text for the current URL
+            profile_text = parse_page(url)
+            
+            if profile_text:
+                # Get embedding for the profile
+                profile_embedding = get_embedding([profile_text])[0]
+                
+                # Append the profile and its embedding to the list
+                lawyer_profiles.append({
+                    "url": url,
+                    "text": profile_text,
+                    "embedding": profile_embedding
+                })
+            else:
+                print(f"Skipping {url} due to failed parsing.")
+        except Exception as e:
+            print(f"Error processing {url}: {e}")
+
+    # Store the profiles and their embeddings in a JSON file
+    with open("lawyer_profiles_with_embeddings.json", "w") as f:
+        json.dump(lawyer_profiles, f, indent=4)
+
+    print(f"Processed {len(lawyer_profiles)} profiles and stored embeddings.")
+
+
+# Run the function to process the profiles
+process_lawyer_profiles_with_embeddings()
